@@ -1,6 +1,7 @@
 module FPWarmup exposing (..)
 
 import List
+import Result exposing (..)
 import Maybe exposing (..)
 
 firstDigit : Int -> Int -> (Int, Int)
@@ -52,3 +53,17 @@ additivePersistence n =
       (List.sum l |> additivePersistence) + 1
     else
       0
+
+take : Int -> List a -> Result String (List a)
+take num list =
+  if num < 0 then
+    Err "negative index"
+  else if num > List.length list then
+    Err "not enough elements"
+  else
+    case (num, list) of
+      (0, _) -> Ok []
+      (_, []) -> Ok []
+      (n, x::xs) -> case (take (n-1) xs) of
+          Ok result -> Ok (x :: result)
+          Err error as err -> err

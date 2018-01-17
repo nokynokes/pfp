@@ -1,6 +1,7 @@
-module FPWarmup exposing (digitsOfInts)
+module FPWarmup exposing (..)
 
 import List
+import Maybe exposing (..)
 
 firstDigit : Int -> Int -> (Int, Int)
 firstDigit n c =
@@ -24,6 +25,30 @@ digitsOfInts n =
       firstDigit n 0
     in
       if c /= 0 then
-        first :: (remainingDigits n c |> digitsOfInts)
+        first :: (remainingDigits n c
+        |> digitsOfInts)
       else
         List.singleton first
+
+digitalRoot : Int -> Int
+digitalRoot n =
+  let l =
+     digitsOfInts n
+  in
+    if List.length l > 1 then
+      List.sum l
+      |> digitalRoot
+    else
+      case List.head l of
+        Just n -> n
+        _ -> 0 --this should never get hit
+
+additivePersistence: Int -> Int
+additivePersistence n =
+  let l =
+    digitsOfInts n
+  in
+    if List.length l > 1 then
+      (List.sum l |> additivePersistence) + 1
+    else
+      0

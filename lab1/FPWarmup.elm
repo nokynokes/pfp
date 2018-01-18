@@ -66,4 +66,14 @@ take num list =
       (_, []) -> Ok []
       (n, x::xs) -> case (take (n-1) xs) of
           Ok result -> Ok (x :: result)
-          Err error as err -> err
+          Err _ as err -> err
+
+
+subsequences : List a -> List (List a)
+subsequences list =
+  case list of
+    [] -> [[]]
+    x::xs ->
+      let ss = subsequences xs in
+        let ssp = List.map (\a -> x :: a) ss in
+          List.append ss ssp

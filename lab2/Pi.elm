@@ -18,7 +18,10 @@ main =
     , subscriptions = subscriptions
     }
 
-type alias Point = { x:Float, y:Float }
+type alias Point =
+  { x : Float
+  , y : Float
+  }
 
 type alias Model =
   { hits : List Point
@@ -28,10 +31,12 @@ type alias Model =
   , seed : Seed
   }
 
-type Msg = Tick
+type Msg =
+  Tick
 
 init : (Model, Cmd Msg)
-init = (initialModel, Cmd.none)
+init =
+  (initialModel, Cmd.none)
 
 initialModel : Model
 initialModel =
@@ -42,27 +47,32 @@ initialModel =
   , seed = Random.initialSeed 4308
   }
 
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Time.every Time.millisecond (\_ -> Tick)
 
 randomFloat : Generator Float
-randomFloat = Random.float 0 1
+randomFloat =
+  Random.float 0 1
 
 point : Float -> Float -> Point
-point f1 f2 = {x = f1, y = f2}
+point f1 f2 =
+  {x = f1, y = f2}
 
 pointGenerator : Generator Point
 pointGenerator =
   Random.map2 point randomFloat randomFloat
 
 distance : Point -> Float
-distance point = sqrt (point.x^2 + point.y^2)
+distance point =
+  sqrt (point.x^2 + point.y^2)
 
 insideUnitCircle : Point -> Bool
-insideUnitCircle point = if distance point < 1 then True else False
+insideUnitCircle point =
+  if distance point < 1 then
+    True
+  else
+    False
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -90,7 +100,7 @@ genPi model =
     let denominator = toFloat (model.hitCount + model.missCount) in
       let pie = (numerator / denominator) * (toFloat 4) in
         toString pie
-        
+
 view : Model -> Html Msg
 view model =
   div []

@@ -10,7 +10,7 @@ import Html exposing (Html)
 ----------------------------------------------------------------------
 
 main : Program Never Model Msg
-main = 
+main =
   Html.program
     { init = init
     , view = view
@@ -35,19 +35,35 @@ init = (initialModel, Cmd.none)
 
 initialModel : Model
 initialModel =
-  Debug.crash "TODO"
+  { hits = []
+  , misses = []
+  , hitCount = 0
+  , missCount = 0
+  , seed = Random.initialSeed 4308
+  }
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Debug.crash "TODO"
+  Time.every Time.second (\_ -> Tick)
+
+randomFloat : Generator Float
+randomFloat = Random.float 0 1
+
+point : Float -> Float -> Point
+point f1 f2 = {x = f1, y = f2}
 
 pointGenerator : Generator Point
 pointGenerator =
-  Debug.crash "TODO"
+  Random.map2 point randomFloat randomFloat
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  Debug.crash "TODO"
+  case msg of
+    Tick ->
+      let (point, newSeed) =
+        Random.step pointGenerator model.seed
+      in
+        Debug.crash "TODO"
 
 view : Model -> Html Msg
 view model =

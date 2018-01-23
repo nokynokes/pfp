@@ -4,7 +4,7 @@ module Pi exposing (main)
 
 import Random exposing (Generator, Seed)
 import Time
-import Html exposing (Html)
+import Html exposing (..)
 
 
 ----------------------------------------------------------------------
@@ -42,9 +42,11 @@ initialModel =
   , seed = Random.initialSeed 4308
   }
 
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every Time.second (\_ -> Tick)
+  Time.every Time.millisecond (\_ -> Tick)
 
 randomFloat : Generator Float
 randomFloat = Random.float 0 1
@@ -56,6 +58,12 @@ pointGenerator : Generator Point
 pointGenerator =
   Random.map2 point randomFloat randomFloat
 
+distance : Point -> Float
+distance point = sqrt (point.x^2 + point.y^2)
+
+insideUnitCircle : Point -> Bool
+insideUnitCircle point = if distance point < 1 then True else False
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
@@ -63,8 +71,34 @@ update msg model =
       let (point, newSeed) =
         Random.step pointGenerator model.seed
       in
-        Debug.crash "TODO"
+        if insideUnitCircle point then
+          { model
+          | hits = point :: model.hits
+          , hitCount = model.hitCount + 1
+          , seed = newSeed
+          } ! []
+        else
+          { model
+          | misses = point :: model.misses
+          , missCount = model.missCount + 1
+          , seed = newSeed
+          } ! []
 
+genPi : Model -> String
+genPi model =
+  let numerator = toFloat model.hitCount in
+    let denominator = toFloat (model.hitCount + model.missCount) in
+      let pie = (numerator / denominator) * (toFloat 4) in
+        toString pie
+        
 view : Model -> Html Msg
 view model =
-  Debug.crash "TODO"
+  div []
+    [
+      h1 [] [text "Hello World!"]
+    , div []
+      [
+        h2 [] [text "Value of pi is: "]
+      , genPi model |> text
+      ]
+    ]

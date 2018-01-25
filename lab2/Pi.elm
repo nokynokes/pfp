@@ -3,7 +3,7 @@ module Pi exposing (main)
 -- Add/modify imports if you'd like. ---------------------------------
 
 import Random exposing (Generator, Seed)
-import Time
+import Time exposing (..)
 import Html exposing (..)
 
 
@@ -15,21 +15,18 @@ main =
     { init = init
     , view = view
     , update = update
-    , subscriptions = subscriptions
-    }
+    , subscriptions = subscriptions }
 
 type alias Point =
   { x : Float
-  , y : Float
-  }
+  , y : Float }
 
 type alias Model =
   { hits : List Point
   , misses : List Point
   , hitCount : Int
   , missCount : Int
-  , seed : Seed
-  }
+  , seed : Seed }
 
 type Msg =
   Tick
@@ -44,12 +41,11 @@ initialModel =
   , misses = []
   , hitCount = 0
   , missCount = 0
-  , seed = Random.initialSeed 4308
-  }
+  , seed = Random.initialSeed 4308 }
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every Time.millisecond (\_ -> Tick)
+  every millisecond (\_ -> Tick)
 
 randomFloat : Generator Float
 randomFloat =
@@ -85,14 +81,12 @@ update msg model =
           { model
           | hits = point :: model.hits
           , hitCount = model.hitCount + 1
-          , seed = newSeed
-          } ! []
+          , seed = newSeed } ! []
         else
           { model
           | misses = point :: model.misses
           , missCount = model.missCount + 1
-          , seed = newSeed
-          } ! []
+          , seed = newSeed } ! []
 
 genPi : Model -> String
 genPi model =
@@ -105,10 +99,10 @@ view : Model -> Html Msg
 view model =
   div []
     [
-      h1 [] [text "Hello World!"]
+      h1 [] [ text "Hello World!" ]
     , div []
       [
-        h2 [] [text "Value of pi is: "]
+        h2 [] [ text "Value of pi is: " ]
       , genPi model |> text
       ]
     ]

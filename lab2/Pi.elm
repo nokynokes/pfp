@@ -5,6 +5,10 @@ module Pi exposing (main)
 import Random exposing (Generator, Seed)
 import Time exposing (..)
 import Html exposing (..)
+import Color exposing (..)
+import Collage exposing (Shape,Form)
+import Element exposing (toHtml)
+import Platform.Sub exposing (batch)
 
 
 ----------------------------------------------------------------------
@@ -45,11 +49,12 @@ initialModel =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  every millisecond (\_ -> Tick)
+  batch
+    [ every millisecond (\_ -> Tick) ]
 
 randomFloat : Generator Float
 randomFloat =
-  Random.float 0 1
+  Random.float -1 1
 
 point : Float -> Float -> Point
 point f1 f2 =
@@ -64,11 +69,7 @@ distance point =
   sqrt (point.x^2 + point.y^2)
 
 insideUnitCircle : Point -> Bool
-insideUnitCircle point =
-  if distance point < 1 then
-    True
-  else
-    False
+insideUnitCircle point = distance point < 1
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -95,14 +96,23 @@ genPi model =
       let pie = (numerator / denominator) * (toFloat 4) in
         toString pie
 
+
+pointsToCircles : Float -> Color -> List Point -> List Form
+pointsToCircles s c points =
+  let circles = Collage.circle 2 in
+    List.map (\point -> Collage.filled c circles
+      |> Collage.move (s * point.x, s * point.y)) points
+
+
+
 view : Model -> Html Msg
 view model =
   div []
     [
-      h1 [] [ text "Hello World!" ]
-    , div []
-      [
-        h2 [] [ text "Value of pi is: " ]
+      let l = 500 in
+        pointsToCircles (l/2) red model.hits
+          |> List.append (pointsToCircles (l/2) green model.misses)
+          |> Collage.collage l l
+          |> toHtml
       , genPi model |> text
-      ]
     ]

@@ -7,6 +7,7 @@ import Time exposing (..)
 import Html exposing (..)
 import Color exposing (..)
 import Collage exposing (Shape,Form)
+import Text exposing (fromString,Style,style,Text)
 import Element exposing (toHtml)
 import Platform.Sub exposing (batch)
 import Window exposing (Size,resizes)
@@ -45,7 +46,8 @@ init =
 
 initialSize : Cmd Msg
 initialSize =
-  Window.size |> Task.perform SizeUpdated
+  Window.size
+  |> Task.perform SizeUpdated
 
 initialModel : Model
 initialModel =
@@ -54,7 +56,7 @@ initialModel =
   , hitCount = 0
   , missCount = 0
   , seed = Random.initialSeed 4308
-  , window = Size 0 0}
+  , window = Size 0 0 }
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -101,12 +103,16 @@ update msg model =
           , missCount = model.missCount + 1
           , seed = newSeed } ! []
 
-genPi : Model -> String
+
+format : Text -> Text
+format = Text.height 40 >> Text.monospace
+
+genPi : Model -> Form
 genPi model =
   let numerator = toFloat model.hitCount in
-    let denominator = toFloat (model.hitCount + model.missCount) in
-      let pie = (numerator / denominator) * (toFloat 4) in
-        toString pie
+  let denominator = toFloat (model.hitCount + model.missCount) in
+  let pie = (numerator / denominator) * (toFloat 4) |> toString in
+    pie |> fromString |> format |> Collage.text |> Collage.move (0.0,0.0)
 
 
 pointsToCircles : Float -> Float -> Color -> List Point -> List Form
@@ -122,10 +128,13 @@ view model =
   div []
     [
       let w = model.window.width |> toFloat in
-        let h = model.window.height |> toFloat in
-          pointsToCircles (w/2) (h/2) red model.hits
-            |> List.append (pointsToCircles (w/2) (h/2) green model.misses)
-            |> Collage.collage (round w) (round h)
-            |> toHtml
-      , genPi model |> text
+      let h = model.window.height |> toFloat in
+      let scaleX = w/2 in
+      let scaleY = h/2 in
+      let piTxT = genPi model in
+        pointsToCircles scaleX scaleY red model.hits
+          |> List.append (pointsToCircles scaleX scaleY green model.misses)
+          |> List.append [ piTxT ]
+          |> Collage.collage (round w) (round h)
+          |> toHtml
     ]

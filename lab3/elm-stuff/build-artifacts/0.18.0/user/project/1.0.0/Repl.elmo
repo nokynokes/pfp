@@ -1,0 +1,7 @@
+var _user$project$Repl$t_s_o_l = {ctor: '_Tuple0'};
+var _user$project$Repl$d_e_l_t_r_o_n_3_0_3_0 = function () {
+	var _p0 = A2(_user$project$ListsAndTrees$create2, 1, 5);
+	var t1 = _p0._0;
+	var t2 = _p0._1;
+	return _user$project$ListsAndTrees$treeSize(t2);
+}();

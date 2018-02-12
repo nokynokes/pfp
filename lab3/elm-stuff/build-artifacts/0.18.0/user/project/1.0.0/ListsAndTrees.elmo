@@ -1,0 +1,127 @@
+var _user$project$ListsAndTrees$odd = function (n) {
+	return _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], n, 2),
+		1);
+};
+var _user$project$ListsAndTrees$even = function (n) {
+	return _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], n, 2),
+		0);
+};
+var _user$project$ListsAndTrees$treeSize = function (tree) {
+	var _p0 = tree;
+	if (_p0.ctor === 'Empty') {
+		return 0;
+	} else {
+		return (1 + _user$project$ListsAndTrees$treeSize(_p0._1)) + _user$project$ListsAndTrees$treeSize(_p0._2);
+	}
+};
+var _user$project$ListsAndTrees$almostCompleteTrees = F2(
+	function (_p2, _p1) {
+		return {ctor: '[]'};
+	});
+var _user$project$ListsAndTrees$completeTrees = F2(
+	function (_p4, _p3) {
+		return {ctor: '[]'};
+	});
+var _user$project$ListsAndTrees$balancedTrees = F2(
+	function (_p6, _p5) {
+		return {ctor: '[]'};
+	});
+var _user$project$ListsAndTrees$mem = F2(
+	function (x, tree) {
+		var _p7 = tree;
+		if (_p7.ctor === 'Empty') {
+			return false;
+		} else {
+			return _elm_lang$core$Native_Utils.eq(x, _p7._0) ? true : (A2(_user$project$ListsAndTrees$mem, x, _p7._1) || A2(_user$project$ListsAndTrees$mem, x, _p7._2));
+		}
+	});
+var _user$project$ListsAndTrees$suffixes = function (xs) {
+	var _p8 = xs;
+	if (_p8.ctor === '[]') {
+		return {
+			ctor: '::',
+			_0: {ctor: '[]'},
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: xs,
+			_1: _user$project$ListsAndTrees$suffixes(_p8._1)
+		};
+	}
+};
+var _user$project$ListsAndTrees$Node = F3(
+	function (a, b, c) {
+		return {ctor: 'Node', _0: a, _1: b, _2: c};
+	});
+var _user$project$ListsAndTrees$Empty = {ctor: 'Empty'};
+var _user$project$ListsAndTrees$fullTree = F2(
+	function (x, h) {
+		var _p9 = h;
+		if (_p9 === 0) {
+			return _user$project$ListsAndTrees$Empty;
+		} else {
+			var child = A2(_user$project$ListsAndTrees$fullTree, x, h - 1);
+			return A3(_user$project$ListsAndTrees$Node, x, child, child);
+		}
+	});
+var _user$project$ListsAndTrees$balancedTree = F2(
+	function (_p11, _p10) {
+		return _user$project$ListsAndTrees$Empty;
+	});
+var _user$project$ListsAndTrees$create2 = F2(
+	function (a, s) {
+		var helper = function (n) {
+			if (_elm_lang$core$Native_Utils.eq(n, 0)) {
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$ListsAndTrees$Empty,
+					_1: A3(_user$project$ListsAndTrees$Node, a, _user$project$ListsAndTrees$Empty, _user$project$ListsAndTrees$Empty)
+				};
+			} else {
+				if (_user$project$ListsAndTrees$odd(n)) {
+					var _p12 = helper((n / 2) | 0);
+					var t1 = _p12._0;
+					var t2 = _p12._1;
+					return {
+						ctor: '_Tuple2',
+						_0: A3(_user$project$ListsAndTrees$Node, a, t1, t1),
+						_1: A3(_user$project$ListsAndTrees$Node, a, t1, t2)
+					};
+				} else {
+					var _p13 = helper(((n / 2) | 0) - 1);
+					var t1 = _p13._0;
+					var t2 = _p13._1;
+					return {
+						ctor: '_Tuple2',
+						_0: A3(_user$project$ListsAndTrees$Node, a, t1, t2),
+						_1: A3(_user$project$ListsAndTrees$Node, a, t2, t2)
+					};
+				}
+			}
+		};
+		return helper(s);
+	});
+var _user$project$ListsAndTrees$insert = F2(
+	function (item, tree) {
+		var _p14 = tree;
+		if (_p14.ctor === 'Empty') {
+			return A3(_user$project$ListsAndTrees$Node, item, _user$project$ListsAndTrees$Empty, _user$project$ListsAndTrees$Empty);
+		} else {
+			var _p17 = _p14._2;
+			var _p16 = _p14._1;
+			var _p15 = _p14._0;
+			return (_elm_lang$core$Native_Utils.cmp(item, _p15) > -1) ? A3(
+				_user$project$ListsAndTrees$Node,
+				_p15,
+				_p16,
+				A2(_user$project$ListsAndTrees$insert, item, _p17)) : A3(
+				_user$project$ListsAndTrees$Node,
+				_p15,
+				A2(_user$project$ListsAndTrees$insert, item, _p16),
+				_p17);
+		}
+	});

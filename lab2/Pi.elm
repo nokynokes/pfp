@@ -7,7 +7,7 @@ import Time exposing (..)
 import Html exposing (..)
 import Color exposing (..)
 import Collage exposing (Shape,Form)
-import Text exposing (fromString,Style,style,Text)
+import Text exposing (fromString,Text)
 import Element exposing (toHtml)
 import Platform.Sub exposing (batch)
 import Window exposing (Size,resizes)
@@ -34,7 +34,7 @@ type alias Model =
   , hitCount : Int
   , missCount : Int
   , seed : Seed
-  , window : Window.Size}
+  , window : Window.Size }
 
 type Msg =
   Tick
@@ -104,15 +104,19 @@ update msg model =
           , seed = newSeed } ! []
 
 
-format : Text -> Text
-format = Text.height 40 >> Text.monospace
+format : String -> Form
+format = fromString
+  >> Text.height 40
+  >> Text.monospace
+  >> Text.italic
+  >> Collage.text
 
 genPi : Model -> Form
 genPi model =
   let numerator = toFloat model.hitCount in
   let denominator = toFloat (model.hitCount + model.missCount) in
   let pie = (numerator / denominator) * (toFloat 4) |> toString in
-    pie |> fromString |> format |> Collage.text |> Collage.move (0.0,0.0)
+    pie |> format |> Collage.move (0.0,0.0)
 
 
 pointsToCircles : Float -> Float -> Color -> List Point -> List Form
@@ -133,8 +137,8 @@ view model =
       let scaleY = h/2 in
       let piTxT = genPi model in
         pointsToCircles scaleX scaleY red model.hits
-          |> List.append (pointsToCircles scaleX scaleY green model.misses)
-          |> List.append [ piTxT ]
+          |> (++) (pointsToCircles scaleX scaleY green model.misses)
+          |> (++) [ piTxT ]
           |> Collage.collage (round w) (round h)
           |> toHtml
     ]

@@ -37,10 +37,23 @@ isEmpty h =
     _ -> False
 
 findMin : Heap comparable -> Maybe comparable
-findMin h = Debug.crash "TODO"
+findMin h =
+  case h of
+    Heap (0, _) -> Nothing
+    Heap (_, (Node a _ _) ) -> Just a
 
 insert : comparable -> Heap comparable -> Heap comparable
-insert x h = Debug.crash "TODO"
+insert x h =
+  case h of
+    Heap (n, t) ->
+      if n==0
+      then Heap (1, Node x Empty Empty)
+      else Heap (n+1, )
+
+insertAndBubbleUp : comparable -> List Dir -> Tree comparable -> Tree comparable
+insertAndBubbleUp x dirList t =
+
+
 
 deleteMin : Heap comparable -> Maybe (comparable, Heap comparable)
 deleteMin h = Debug.crash "TODO"

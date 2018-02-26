@@ -28,10 +28,13 @@ unwrapNode t =
 ------------------------------------------------------------------------------
 
 empty : Heap comparable
-empty = Debug.crash "TODO"
+empty = Heap (0, Empty)
 
 isEmpty : Heap comparble -> Bool
-isEmpty h = Debug.crash "TODO"
+isEmpty h =
+  case h of
+    Heap (0, _) -> True
+    _ -> False
 
 findMin : Heap comparable -> Maybe comparable
 findMin h = Debug.crash "TODO"

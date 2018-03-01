@@ -41,7 +41,7 @@ findMin h =
   case h of
     Heap (0, _) -> Nothing
     Heap (_, (Node a _ _) ) -> Just a
-    _ -> Debug.crash "TODO"
+    _ -> Debug.crash "should never hit this case"
 
 insert : comparable -> Heap comparable -> Heap comparable
 insert x h =
@@ -83,13 +83,49 @@ insertAndBubbleUp x dirList t =
               Node xp (Node d lp rp) r
 
 
-
-
-
-
-
 deleteMin : Heap comparable -> Maybe (comparable, Heap comparable)
-deleteMin h = Debug.crash "TODO"
+deleteMin (Heap (n, t)) = case t of
+  Empty -> Nothing
+  Node x Empty Empty -> Just (x, empty)
+  Node x _ _ ->
+    let (lastElement, newTree) = removeElement (pathTo (n-1)) t in
+      case newTree of
+        Empty -> Debug.crash "deleteMin: impossible"
+        Node _ left right ->
+          Just (x, Heap (n - 1, bubbleDown (Node lastElement left right)))
+--
+removeElement : List Dir -> Tree comparable -> (comparable, Tree comparable)
+removeElement dirList t =
+  case (dirList, unwrapNode t) of
+    ([], (x, _, _)) -> (x, Empty)
+    (Right :: t, (x, l, r)) ->
+      let (xp, tp) = removeElement t r in
+        (xp, Node x l tp)
+    (Left :: t, (x, l, r)) ->
+      let (xp, tp) = removeElement t l in
+        (xp, Node x tp r)
+--
+bubbleDown : Tree comparable -> Tree comparable
+bubbleDown tree =
+  case unwrapNode tree of
+    (x, Empty, Empty) -> tree
+    (x, Empty, r) -> case unwrapNode r of
+      (xr, l, rr) ->
+        if x > xr
+        then Node xr Empty (bubbleDown (Node x l rr))
+        else tree
+    (x, l, Empty) -> case unwrapNode l of
+      (xl, ll, r) ->
+        if x > xl
+        then Node xl (bubbleDown (Node x ll Empty)) Empty
+        else tree
+    (x, l ,r) -> case ((unwrapNode l), (unwrapNode r)) of
+      ((xl, ll, lr), (xr, rl, rr)) ->
+        if x > xl
+        then Node xl (bubbleDown (Node x ll lr)) r
+        else if x > xr
+        then Node xr l (bubbleDown (Node x rl rr))
+        else tree
 
 ------------------------------------------------------------------------------
 

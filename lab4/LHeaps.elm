@@ -24,16 +24,35 @@ makeT x h1 h2 =
 merge : Heap comparable -> Heap comparable -> Heap comparable
 merge h1 h2 = case (h1, h2) of
   (_, E) -> h1
-  (E, _) -> h2 
+  (E, _) -> h2
   (T _ x1 left1 right1, T _ x2 left2 right2) ->
     if x1 <= x2
       then makeT x1 left1 (merge right1 h2)
       else makeT x2 left2 (merge h1 right2)
 
+insert : comparable -> Heap comparable -> Heap comparable
+insert x h = merge (T 1 x E E) h
+
+singletonHeap : comparable -> Heap comparable
+singletonHeap x =  insert x E
+
+
 {------------------------------------------------------------------------}
 
 fromList : List comparable -> Heap comparable
-fromList _ =
-  -- TODO
-  E
+fromList l = case l of
+  [] -> E
+  _ -> case (makePass <| List.map singletonHeap l) of
+    [x] -> x
+    _ -> Debug.crash "Should not hit this case"
 
+mergePairs : List (Heap comparable) -> List (Heap comparable)
+mergePairs l = case l of
+  x1 :: x2 :: [] -> [merge x1 x2]
+  _ -> Debug.crash "TODO"
+
+makePass : List (Heap comparable) -> List (Heap comparable)
+makePass l = case l of
+  [x] -> l
+  x1 :: x2 :: xs -> makePass <| (++) xs <| mergePairs [x1,x2]
+  _ -> Debug.crash "TODO"

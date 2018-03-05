@@ -34,7 +34,7 @@ insert : comparable -> Heap comparable -> Heap comparable
 insert x h = merge (T 1 x E E) h
 
 singletonHeap : comparable -> Heap comparable
-singletonHeap x =  insert x E
+singletonHeap x = T 1 x E E
 
 
 {------------------------------------------------------------------------}

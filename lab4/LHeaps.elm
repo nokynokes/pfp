@@ -42,17 +42,28 @@ singletonHeap x = T 1 x E E
 fromList : List comparable -> Heap comparable
 fromList l = case l of
   [] -> E
-  _ -> case (makePass <| List.map singletonHeap l) of
-    [x] -> x
-    _ -> Debug.crash "Should not hit this case"
+  _ -> case (makePass <| pairwise <| List.map singletonHeap l) of
+    x :: [] -> mergePairs x
+    _ -> Debug.crash "error"
 
-mergePairs : List (Heap comparable) -> List (Heap comparable)
-mergePairs l = case l of
-  x1 :: x2 :: [] -> [merge x1 x2]
-  _ -> Debug.crash "TODO"
 
-makePass : List (Heap comparable) -> List (Heap comparable)
+makePass : List (Heap comparable, Heap comparable) -> List (Heap comparable, Heap comparable)
 makePass l = case l of
-  [x] -> l
-  x1 :: x2 :: xs -> makePass <| (++) xs <| mergePairs [x1,x2]
-  _ -> Debug.crash "TODO"
+  h :: [] -> l
+  _ ->
+    let lp = List.foldl (\h acc -> (mergePairs h) :: acc ) [] l
+    in makePass <| pairwise lp
+
+
+mergePairs : (Heap comparable, Heap comparable) -> Heap comparable
+mergePairs (h1, h2) = merge h1 h2
+
+pairwise : List (Heap comparable) -> List (Heap comparable, Heap comparable)
+pairwise list =
+  let tailrec l acc =
+    case l of
+      x :: [] -> (x, E) :: acc
+      x1 :: x2 :: xs -> tailrec xs ((x1,x2) :: acc)
+      [] -> acc
+  in
+    tailrec (List.reverse list) []
